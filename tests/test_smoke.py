@@ -1,8 +1,13 @@
 """Smoke tests for sandbox_tool plugin."""
 
 import asyncio
+import sys
+from pathlib import Path
 
-from plugin.plugins.sandbox_tool import SandboxToolPlugin
+# Add plugin root to path so we can import from __init__
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from sandbox_tool import SandboxToolPlugin
 
 
 def test_plugin_id():
