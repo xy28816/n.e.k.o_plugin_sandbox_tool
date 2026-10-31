@@ -192,8 +192,7 @@ class SandboxToolPlugin(NekoPluginBase):
             if log_path.exists():
                 try:
                     with open(log_path, "r", encoding="utf-8") as f:
-                        lines = [ln.rstrip("
-") for ln in f.readlines() if ln.strip()]
+                        lines = [ln.rstrip("\n") for ln in f.readlines() if ln.strip()]
                 except Exception:
                     lines = []
             lines.append(line)
@@ -201,9 +200,7 @@ class SandboxToolPlugin(NekoPluginBase):
                 lines = lines[-max_lines:]
 
             with open(log_path, "w", encoding="utf-8") as f:
-                f.write("
-".join(lines) + "
-")
+                f.write("\n".join(lines) + "\n")
         except Exception as e:
             try:
                 self.logger.warning(f"Failed to write log: {e}")

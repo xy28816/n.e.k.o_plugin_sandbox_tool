@@ -1,0 +1,6 @@
+{
+  "sandbox_tool": {
+    "name": "Sandbox Tool",
+    "description": "General-purpose sandbox tool: read/write files, execute commands, view logs"
+  }
+}
