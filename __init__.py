@@ -9,9 +9,9 @@ from plugin.sdk.plugin import (
     NekoPluginBase,
     Ok,
     lifecycle,
+    llm_tool,
     neko_plugin,
     plugin_entry,
-    llm_tool,
 )
 
 LOG_DIR_NAME = "logs"
