@@ -1,7 +1,7 @@
 [plugin]
 id = "sandbox_tool"
 name = "Sandbox Tool"
-version = "0.1.0"
+version = "0.1.1"
 type = "plugin"
 description = "General-purpose sandbox tool: read/write arbitrary files, execute arbitrary commands (prompt user confirmation before execution), operation log persisted to disk."
 short_description = "Sandbox tool for file and command operations with confirmation."
