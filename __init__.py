@@ -275,8 +275,7 @@ class SandboxToolPlugin(NekoPluginBase):
             if text is None:
                 text = data.decode("utf-8", errors="replace")
 
-            result = f"--- File: {path} ---
-{text}"
+            result = f"--- File: {path} ---\n{text}"
             self._append_log("read", str(path), f"ok, bytes={len(data)}")
             return Ok({"ok": True, "result": result, "bytes": len(data)})
         except Exception as e:
