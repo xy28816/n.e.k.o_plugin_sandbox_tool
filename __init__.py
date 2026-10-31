@@ -408,8 +408,7 @@ class SandboxToolPlugin(NekoPluginBase):
             result_lines = [f"--- Directory: {path} ({len(entries)} entries) ---"]
             for e in entries:
                 result_lines.append(f"[{e['type']}] {e['name']}  ({e['size']} bytes, {e['mtime']})")
-            result = "
-".join(result_lines)
+            result = "\n".join(result_lines)
             self._append_log("listdir", str(path), f"ok, {len(entries)} entries")
 
             return Ok({"ok": True, "result": result, "entries": entries})
