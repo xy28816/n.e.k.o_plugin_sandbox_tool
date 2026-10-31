@@ -1,0 +1,6 @@
+[plugin_runtime]
+enabled = true
+auto_start = false
+priority = 0
+timeout = 30
+startup_failure = "warn"

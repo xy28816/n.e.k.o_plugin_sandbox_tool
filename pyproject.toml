@@ -1,0 +1,9 @@
+[project]
+name = "neko-plugin-sandbox-tool"
+version = "0.1.0"
+description = "General-purpose sandbox tool: read/write arbitrary files, execute arbitrary commands (prompt user confirmation before execution), operation log persisted to disk."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.ruff.lint]
+ignore = ["I001"]

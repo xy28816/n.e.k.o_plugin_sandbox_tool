@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "N.E.K.O: check sandbox_tool",
+      "type": "shell",
+      "command": "uv run neko-plugin check sandbox_tool",
+      "options": {
+        "cwd": "${config:nekoPlugin.repoRoot}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "N.E.K.O: sync sandbox_tool",
+      "type": "shell",
+      "command": "uv run --with pip neko-plugin sync sandbox_tool --clean",
+      "options": {
+        "cwd": "${config:nekoPlugin.repoRoot}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "N.E.K.O: check -r sandbox_tool",
+      "type": "shell",
+      "command": "uv run neko-plugin check -r sandbox_tool",
+      "options": {
+        "cwd": "${config:nekoPlugin.repoRoot}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "N.E.K.O: build sandbox_tool",
+      "type": "shell",
+      "command": "uv run neko-plugin build sandbox_tool",
+      "options": {
+        "cwd": "${config:nekoPlugin.repoRoot}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

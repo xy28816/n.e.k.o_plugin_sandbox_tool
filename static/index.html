@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandbox Tool - Sandbox Tool Panel</title>
+<style>
+  :root {
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --border: rgba(100, 116, 139, 0.2);
+    --border-soft: rgba(100, 116, 139, 0.12);
+    --text: #0f172a;
+    --muted: #64748b;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .badge {
+    font-size: 12px; padding: 4px 10px; border-radius: 20px;
+    background: #e2e8f0; color: var(--muted);
+    border: 1px solid var(--border-soft);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  }
+  .card h2 { font-size: 15px; margin-bottom: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .panel { margin-bottom: 20px; }
+  .panel:last-child { margin-bottom: 0; }
+  .panel h3 {
+    font-size: 15px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .badge-ok { background: #dcfce7; color: #166534; border-color: #86efac; }
+  .badge-warn { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+  .badge-danger { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+  .badge-purple { background: #ede9fe; color: #6d28d9; border-color: #ddd6fe; }
+
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+  input[type="text"], input[type="number"], textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: 8px; background: #f8fafc; color: var(--text);
+    font-size: 13px; box-sizing: border-box;
+  }
+  textarea { min-height: 120px; font-family: ui-monospace, SFMono-Regular, "Consolas", monospace; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
+  .row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 12px; }
+  .row > * { flex: 1; }
+  .row.auto > * { flex: auto; }
+  button {
+    padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
+    background: #f8fafc; color: var(--text); font-size: 13px; cursor: pointer;
+  }
+  button:hover { background: #e2e8f0; }
+  button.primary { background: var(--blue); color: #fff; border-color: transparent; }
+  button.primary:hover { filter: brightness(0.95); }
+  button.danger { background: var(--red); color: #fff; border-color: transparent; }
+  button.danger:hover { filter: brightness(0.95); }
+  button.secondary { background: var(--purple); color: #fff; border-color: transparent; }
+  button.secondary:hover { filter: brightness(0.95); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .result {
+    margin-top: 8px; padding: 10px; border-radius: 8px;
+    background: #f8fafc; border: 1px solid var(--border);
+    font-family: ui-monospace, SFMono-Regular, "Consolas", monospace;
+    font-size: 12px; white-space: pre-wrap; word-break: break-all;
+    max-height: 400px; overflow: auto;
+  }
+  .result.ok { border-left: 4px solid var(--green); }
+  .result.err { border-left: 4px solid var(--red); }
+  .result.warn { border-left: 4px solid var(--yellow); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #ffffff; border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+    padding: 12px 20px; border-radius: 10px; font-size: 14px; color: var(--text);
+    opacity: 0; transition: 0.3s; z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hidden { display: none; }
+  .small { font-size: 12px; color: var(--muted); }
+  .mono { font-family: ui-monospace, SFMono-Regular, "Consolas", monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>Sandbox Tool</h1>
+    <span class="badge">sandbox_tool</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Status</h2>
+      <div class="result" id="statusBox">Loading...</div>
+      <div class="row" style="margin-top:10px;">
+        <button class="primary" onclick="refreshStatus()">Refresh</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Quick Actions</h2>
+      <div class="small">Read / Write / List Directory / View Logs do not require confirmation, execute directly.</div>
+      <div class="small" style="color:var(--red);">Execute Command needs to be submitted first, then confirmed via "Command Manager" before actually running.</div>
+    </div>
+  </div>
+
+  <!-- Read File -->
+  <div class="panel card">
+    <h3><span class="badge badge-blue">Read File</span> a_readfile</h3>
+    <label>File Path</label>
+    <input type="text" id="readPath" placeholder="e.g. D:/N.E.K.O/plugins/sandbox_tool/data/settings.json">
+    <label>Max Bytes (default 2MB)</label>
+    <input type="number" id="readMaxBytes" value="2000000">
+    <div class="row">
+      <button class="primary" onclick="doRead()">Read File</button>
+    </div>
+    <div class="result" id="readResult"></div>
+  </div>
+
+  <!-- Write File -->
+  <div class="panel card">
+    <h3><span class="badge badge-green">Write File</span> b_writefile</h3>
+    <label>File Path</label>
+    <input type="text" id="writePath" placeholder="e.g. D:/tmp/sandbox_tool/hello.txt">
+    <label>Content</label>
+    <textarea id="writeContent" placeholder="Content to write..."></textarea>
+    <label>Auto Create Parent Directories</label>
+    <select id="writeCreateDirs"><option value="true">Yes</option><option value="false">No</option></select>
+    <div class="row">
+      <button class="primary" onclick="doWrite()">Write File</button>
+    </div>
+    <div class="result" id="writeResult"></div>
+  </div>
+
+  <!-- List Directory -->
+  <div class="panel card">
+    <h3><span class="badge badge-purple">List Directory</span> c_listdir</h3>
+    <label>Directory Path</label>
+    <input type="text" id="listPath" placeholder="e.g. D:/N.E.K.O/plugins">
+    <div class="row">
+      <button class="primary" onclick="doList()">List Directory</button>
+    </div>
+    <div class="result" id="listResult"></div>
+  </div>
+
+  <!-- Command Management -->
+  <div class="panel card">
+    <h3><span class="badge badge-danger">Execute Command</span> d_command / e_confirm</h3>
+    <label>Command</label>
+    <input type="text" id="cmdInput" placeholder="e.g. dir / ver / echo hello">
+    <label>Timeout seconds (default 30)</label>
+    <input type="number" id="cmdTimeout" value="30">
+    <div class="row auto">
+      <button class="primary" onclick="doSubmitCommand()">Submit Command (Pending Confirmation)</button>
+      <button class="secondary" onclick="refreshPending()">Refresh Pending</button>
+    </div>
+    <div class="result" id="submitResult"></div>
+
+    <div style="margin-top:14px;">
+      <h4 style="font-size:13px;color:var(--muted);margin-bottom:6px;">Pending Commands</h4>
+      <div id="pendingList" class="result">Loading...</div>
+      <div class="row" style="margin-top:8px;">
+        <input type="text" id="confirmId" placeholder="Command ID" style="flex:1;">
+        <select id="confirmValue"><option value="true">Agree to Execute</option><option value="false">Reject Execution</option></select>
+        <button class="primary" onclick="doConfirm()">Confirm</button>
+      </div>
+      <div class="result" id="confirmResult"></div>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="panel card">
+    <h3><span class="badge badge-yellow">View Logs</span> f_logs</h3>
+    <label>Show Lines</label>
+    <input type="number" id="logTail" value="100">
+    <div class="row">
+      <button class="primary" onclick="doLogs()">View Logs</button>
+    </div>
+    <div class="result" id="logsResult"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const PLUGIN_ID = "sandbox_tool";
+const RUNS_URL = "/runs";
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function showResult(id, data, ok) {
+  const el = document.getElementById(id);
+  el.className = "result " + (ok ? "ok" : "err");
+  if (data && data.ok !== undefined) {
+    el.textContent = JSON.stringify(data, null, 2);
+  } else {
+    el.textContent = JSON.stringify(data, null, 2);
+  }
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.className = "result err";
+  el.textContent = "Error: " + msg;
+}
+
+function toast(msg, type) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast show " + (type || "");
+  setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+async function callEntry(entryId, args = {}, timeoutMs = 60000) {
+  const resp = await fetch(RUNS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plugin_id: PLUGIN_ID, entry_id: entryId, args }),
+  });
+  if (!resp.ok) throw new Error("Failed to create task: HTTP " + resp.status);
+  const data = await resp.json().catch(() => ({}));
+  const runId = data.run_id || data.id;
+  if (!runId) throw new Error("Failed to get run_id");
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    await sleep(230);
+    const pr = await fetch(RUNS_URL + "/" + runId);
+    if (!pr.ok) continue;
+    const rec = await pr.json().catch(() => ({}));
+    const st = String(rec.status || "").toLowerCase();
+    if (st === "succeeded") {
+      const er = await fetch(RUNS_URL + "/" + runId + "/export");
+      if (!er.ok) return {};
+      const ex = await er.json().catch(() => ({}));
+      const items = Array.isArray(ex.items) ? ex.items : [];
+      let payload = {};
+      for (const it of items) {
+        if (!it || typeof it !== "object") continue;
+        if (it.type === "json" && it.json) { payload = it.json; break; }
+        if (it.type === "text" && typeof it.text === "string") {
+          try { payload = JSON.parse(it.text); break; } catch (_e) {}
+        }
+      }
+      return payload;
+    }
+    if (st === "failed" || st === "canceled" || st === "timeout") {
+      throw new Error("Task " + st);
+    }
+  }
+  throw new Error("Task timed out");
+}
+
+async function refreshStatus() {
+  try {
+    const data = await callEntry("f_logs", { tail: "1" });
+    document.getElementById("statusBox").textContent = JSON.stringify(data, null, 2);
+    toast("Status refreshed");
+  } catch (e) {
+    showError("statusBox", e.message);
+  }
+}
+
+async function doRead() {
+  try {
+    const path = document.getElementById("readPath").value;
+    const maxBytes = document.getElementById("readMaxBytes").value;
+    const data = await callEntry("a_readfile", { path, max_bytes: maxBytes });
+    showResult("readResult", data, data.ok);
+    if (data.ok) toast("Read successful");
+    else toast("Read failed", "err");
+  } catch (e) { showError("readResult", e.message); }
+}
+
+async function doWrite() {
+  try {
+    const path = document.getElementById("writePath").value;
+    const content = document.getElementById("writeContent").value;
+    const createDirs = document.getElementById("writeCreateDirs").value;
+    const data = await callEntry("b_writefile", { path, content, create_dirs: createDirs });
+    showResult("writeResult", data, data.ok);
+    if (data.ok) toast("Write successful");
+    else toast("Write failed", "err");
+  } catch (e) { showError("writeResult", e.message); }
+}
+
+async function doList() {
+  try {
+    const path = document.getElementById("listPath").value;
+    const data = await callEntry("c_listdir", { path });
+    showResult("listResult", data, data.ok);
+    if (data.ok) toast("List successful");
+    else toast("List failed", "err");
+  } catch (e) { showError("listResult", e.message); }
+}
+
+async function doSubmitCommand() {
+  try {
+    const cmd = document.getElementById("cmdInput").value;
+    const timeout = document.getElementById("cmdTimeout").value;
+    const data = await callEntry("d_command", { cmd, timeout });
+    showResult("submitResult", data, data.ok);
+    if (data.ok && data.command_id) {
+      toast("Command submitted, ID: " + data.command_id);
+      document.getElementById("confirmId").value = data.command_id;
+      await refreshPending();
+    } else {
+      toast("Submit failed", "err");
+    }
+  } catch (e) { showError("submitResult", e.message); }
+}
+
+async function refreshPending() {
+  try {
+    const data = await callEntry("f_logs", { tail: "50" });
+    const box = document.getElementById("pendingList");
+    if (data && data.lines) {
+      const submits = data.lines.filter(l => l.includes("command_submit"));
+      box.textContent = submits.length ? submits.join("\n") : "(no pending records)";
+    } else {
+      box.textContent = JSON.stringify(data, null, 2);
+    }
+  } catch (e) {
+    document.getElementById("pendingList").textContent = "Load failed: " + e.message;
+  }
+}
+
+async function doConfirm() {
+  try {
+    const commandId = document.getElementById("confirmId").value;
+    const confirm = document.getElementById("confirmValue").value;
+    const data = await callEntry("e_confirm", { command_id: commandId, confirm });
+    showResult("confirmResult", data, data.ok);
+    if (data.ok) toast("Confirmation processed");
+    else toast("Confirmation failed", "err");
+    await refreshPending();
+  } catch (e) { showError("confirmResult", e.message); }
+}
+
+async function doLogs() {
+  try {
+    const tail = document.getElementById("logTail").value;
+    const data = await callEntry("f_logs", { tail });
+    showResult("logsResult", data, data.ok);
+    if (data.ok) toast("Logs loaded");
+    else toast("Log load failed", "err");
+  } catch (e) { showError("logsResult", e.message); }
+}
+
+refreshStatus();
+</script>
+</body>
+</html>

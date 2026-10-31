@@ -1,0 +1,46 @@
+[plugin]
+id = "sandbox_tool"
+name = "Sandbox Tool"
+version = "0.1.0"
+type = "plugin"
+description = "General-purpose sandbox tool: read/write arbitrary files, execute arbitrary commands (prompt user confirmation before execution), operation log persisted to disk."
+short_description = "Sandbox tool for file and command operations with confirmation."
+keywords = ["sandbox", "file", "command", "read", "write", "execute", "confirm"]
+entry = "plugin.plugins.sandbox_tool:SandboxToolPlugin"
+
+[plugin.author]
+name = "xy28816"
+
+[plugin.sdk]
+recommended = ">=0.1.0,<0.2.0"
+supported = ">=0.1.0,<0.3.0"
+
+[plugin_runtime]
+enabled = true
+auto_start = false
+priority = 0
+timeout = 30
+startup_failure = "warn"
+
+[plugin.store]
+enabled = true
+
+[plugin.i18n]
+default_locale = "en-US"
+locales_dir = "i18n"
+
+[plugin.ui]
+enabled = true
+
+[[plugin.ui.panel]]
+id = "main"
+title = "Sandbox Tool Panel"
+entry = "static/index.html"
+context = "dashboard"
+permissions = ["state:read", "action:call"]
+
+[[plugin.ui.guide]]
+id = "quickstart"
+title = "Quick Start"
+entry = "README.md"
+permissions = ["state:read"]
