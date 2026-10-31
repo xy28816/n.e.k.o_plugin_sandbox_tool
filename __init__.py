@@ -8,7 +8,6 @@ from typing import Optional
 from plugin.sdk.plugin import (
     NekoPluginBase,
     Ok,
-    Err,
     lifecycle,
     neko_plugin,
     plugin_entry,
