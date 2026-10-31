@@ -636,7 +636,7 @@ class SandboxToolPlugin(NekoPluginBase):
                 "returncode": completed.returncode,
                 "result": result_text,
             })
-        except subprocess.TimeoutExpired as e:
+        except subprocess.TimeoutExpired:
             pending["executed"] = True
             pending["confirmed"] = True
             pending["result"] = f"Command execution timed out (> {timeout} seconds)"
